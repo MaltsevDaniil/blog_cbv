@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
+from ..services.utils import unique_slugify
 # Create your models here.
 
 class Post(models.Model):
@@ -43,6 +44,10 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'slug': self.slug})
 
+    def save(self, *args, **kwargs):
+        self.slug = unique_slugify(self, self.title, self.slug)
+        super().save(*args, **kwargs)
+
 
 class Category(MPTTModel):
     title = models.CharField(max_length=255, verbose_name='Название категории')
@@ -65,6 +70,9 @@ class Category(MPTTModel):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         db_table = 'app_categories'
+
+    def get_absolute_url(self):
+        return reverse('post_by_category', kwargs={'slug':self.slug})
 
     def __str__(self):
         return self.title
