@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
+from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 # Create your models here.
 
@@ -18,7 +19,7 @@ class Post(models.Model):
     thumbnail = models.ImageField(default='default.jpg',
                                   verbose_name='Изображение записи',
                                   blank=True,
-                                  upload_to='images/thumbnails/',
+                                  upload_to='images/thumbnails/%Y/%m/%d/',
                                   validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'webp', 'jpeg', 'gif'))]
                                   )
     status = models.CharField(choices=STATUS_OPTIONS, default='published', verbose_name='Статус записи', max_length=10)
@@ -38,6 +39,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('post_detail', kwargs={'slug': self.slug})
 
 
 class Category(MPTTModel):
