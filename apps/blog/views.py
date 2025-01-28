@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from .forms import PostCreatedForm, PostUpdateForm
+from .forms import PostCreateForm, PostUpdateForm
 from .models import Post, Category
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from ..services.mixins import AuthorRequiredMixin
 # Create your views here.
 
 class PostListView(ListView):
@@ -45,10 +47,11 @@ class PostFromCategory(ListView):
         context['title'] = f'Записи из категории: {self.category.title}'
         return context
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/post_create.html'
-    form_class = PostCreatedForm
+    form_class = PostCreateForm
+    login_url = 'home'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -57,17 +60,20 @@ class PostCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        form.save()
         return super().form_valid(form)
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(AuthorRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Post
     template_name = 'blog/post_update.html'
     context_object_name = 'post'
     form_class = PostUpdateForm
+    login_url = 'home'
+    success_message = 'Запись была успешно обновлена!'
 
-    def get_context_data(self, *, objects_list=None,**kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = f'Обнавление статьи: {self.object.title}'
+        context['title'] = f'Обновление статьи: {self.object.title}'
         return context
 
     def form_valid(self, form):

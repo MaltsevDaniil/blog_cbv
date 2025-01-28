@@ -1,7 +1,7 @@
 from django import forms
 from .models import Post
 
-class PostCreatedForm(forms.ModelForm):
+class PostCreateForm(forms.ModelForm):
 
     class Meta:
         model = Post
@@ -15,11 +15,11 @@ class PostCreatedForm(forms.ModelForm):
                 'autocomplete': 'off'
             })
 
-class PostUpdateForm(PostCreatedForm):
+class PostUpdateForm(PostCreateForm):
 
     class Meta:
         model = Post
-        fields = PostCreatedForm.Meta.fields + ('updater', 'fixed')\
+        fields = PostCreateForm.Meta.fields + ('fixed',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
