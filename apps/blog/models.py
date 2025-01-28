@@ -6,6 +6,10 @@ from mptt.models import MPTTModel, TreeForeignKey
 from ..services.utils import unique_slugify
 # Create your models here.
 
+class PostManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('author', 'category').filter(status='published')
+
 class Post(models.Model):
     STATUS_OPTIONS = (
         ('published', 'Опубликовано'),
@@ -31,6 +35,9 @@ class Post(models.Model):
                                 null=True, related_name='updater_posts', blank=True)
     fixed = models.BooleanField(verbose_name='Прикреплено', default=False)
 
+    objects = models.Manager()
+    custom = PostManager()
+
     class Meta:
         db_table = 'blog_post'
         ordering = ['-fixed', '-create']
@@ -47,6 +54,8 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.slug = unique_slugify(self, self.title, self.slug)
         super().save(*args, **kwargs)
+
+
 
 
 class Category(MPTTModel):
