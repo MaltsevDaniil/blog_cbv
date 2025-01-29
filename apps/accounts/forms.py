@@ -66,3 +66,4 @@ class UserLoginForm(AuthenticationForm):
                 'class': 'form-control',
                 'autocomplete': 'off'
             })
+

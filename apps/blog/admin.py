@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Category
+from .models import Post, Category, Comment
 from django_mptt_admin.admin import DjangoMpttAdmin
 # Register your models here.
 
@@ -10,3 +10,7 @@ class CategoryAdmin(DjangoMpttAdmin):
 admin.site.register(Post)
 class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(Comment)
+class CommentAdminPage(DjangoMpttAdmin):
+    pass
