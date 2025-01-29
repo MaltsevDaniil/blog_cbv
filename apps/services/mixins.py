@@ -12,3 +12,5 @@ class AuthorRequiredMixin(AccessMixin):
                 messages.info(request, 'Изменение статьи доступно только автору!')
                 return redirect('home')
         return super().dispatch(request, *args, **kwargs)
+
+

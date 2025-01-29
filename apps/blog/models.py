@@ -125,10 +125,9 @@ class Rating(models.Model):
     user = models.ForeignKey(to=User, verbose_name='Пользователь', on_delete=models.CASCADE, blank=True, null=True)
     value = models.IntegerField(verbose_name='Значение', choices=[(1,'Нравится'), (-1, 'Не нравится')])
     time_create = models.DateTimeField(verbose_name='Время добавления', auto_now_add=True)
-    ip_address = models.GenericIPAddressField(verbose_name='IP Адрес')
 
     class Meta:
-        unique_together = ('post', 'ip_address')
+        unique_together = ('post', 'user')
         ordering = ('-time_create',)
         indexes = [models.Index(fields=['-time_create', 'value'])]
         verbose_name = 'Рейтинг'

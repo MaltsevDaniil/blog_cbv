@@ -8,9 +8,9 @@ from .models import Post, Category, Comment, Rating
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from ..services.mixins import AuthorRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from taggit.models import Tag
-
+from django.urls import reverse
 # Create your views here.
 
 class PostListView(ListView):
@@ -147,13 +147,14 @@ class RatingCreateView(View):
     def post(self, request, *args, **kwargs):
         post_id = request.POST.get('post_id')
         value = int(request.POST.get('value'))
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
         user = request.user if request.user.is_authenticated else None
+
+        if user == None:
+            return HttpResponseRedirect(reverse('register'))
 
         rating, created = self.model.objects.get_or_create(
            post_id=post_id,
-            ip_address=ip,
+            user = user,
             defaults={'value': value, 'user': user},
         )
 
