@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_mptt_admin',
     'debug_toolbar',
     'apps.accounts',
+    'taggit',
 ]
 
 MIDDLEWARE = [
